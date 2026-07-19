@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Retention Platform - Hub Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root[data-theme="dark"] {
+            --bg-workspace: #090d16;
+            --surface-card: #131926;
+            --border-ui: #1f293d;
+            --text-heading: #ffffff;
+            --text-body: #94a3b8;
+            --brand-primary: #00f2fe;
+            --brand-accent: #4facfe;
+        }
+        :root[data-theme="light"] {
+            --bg-workspace: #f8fafc;
+            --surface-card: #ffffff;
+            --border-ui: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #475569;
+            --brand-primary: #0284c7;
+            --brand-accent: #0369a1;
+        }
+        body { background-color: var(--bg-workspace); color: var(--text-body); font-family: 'Inter', system-ui, sans-serif; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); min-height: 100vh; }
+        .navbar-custom { background: var(--surface-card); border-bottom: 1px solid var(--border-ui); padding: 1rem 0; }
+        .platform-logo { font-size: 1.25rem; font-weight: 800; background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass-card { background: var(--surface-card); border: 1px solid var(--border-ui); border-radius: 14px; padding: 1.5rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -10px rgba(0,0,0,0.3); }
+        .stat-value { font-size: 2.25rem; font-weight: 700; color: var(--text-heading); line-height: 1; margin: 0.5rem 0; }
+        .stat-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: rgba(0, 242, 254, 0.1); color: var(--brand-primary); font-size: 1.25rem; }
+        .nav-pill-custom { color: var(--text-body); font-weight: 500; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; transition: all 0.2s; }
+        .nav-pill-custom:hover { background: rgba(0, 242, 254, 0.05); color: var(--text-heading); }
+        .nav-pill-custom.active { background: rgba(0, 242, 254, 0.08); color: var(--brand-primary); font-weight: 600; }
+        .action-cta-btn { background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent)); border: none; color: #fff; font-weight: 600; border-radius: 8px; padding: 0.6rem 1.5rem; transition: filter 0.2s; }
+        .action-cta-btn:hover { filter: brightness(1.15); color: #fff; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-custom sticky-top">
+    <div class="container">
+        <span class="platform-logo"><i class="fa-solid fa-brain me-2"></i>CHURNVISION // PRO</span>
+        <div class="d-flex align-items-center gap-3">
+            <!-- Correctly highlighted as active on this page -->
+            <a href="/dashboard" class="nav-pill-custom active"><i class="fa-solid fa-chart-pie me-2"></i>Metrics Hub</a>
+            <a href="/terminal" class="nav-pill-custom"><i class="fa-solid fa-terminal me-2"></i>Analysis Workspace</a>
+            <button class="btn btn-sm btn-outline-secondary px-3 ms-2" id="themeEngineTrigger"><i class="fa-solid fa-circle-half-stroke me-1"></i> Mode</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-5">
+        <div>
+            <h1 class="fw-bold text-white mb-1" style="color: var(--text-heading) !important;">Portfolio Analytics Matrix</h1>
+            <p class="text-muted m-0">Real-time telemetry and validation intelligence logs.</p>
+        </div>
+        <a href="/terminal" class="action-cta-btn text-decoration-none shadow"><i class="fa-solid fa-bolt me-2"></i>Initialize Testing Core</a>
+    </div>
+
+    <!-- Metrics Cards Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card d-flex align-items-center justify-content-between">
+                <div><span class="text-uppercase tracking-wider small fw-bold opacity-60">Monitored Accounts</span><div class="stat-value">{{ stats.total_accounts }}</div></div>
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card d-flex align-items-center justify-content-between">
+                <div><span class="text-uppercase tracking-wider small fw-bold opacity-60">Aggregate Risk Ratio</span><div class="stat-value text-danger">{{ stats.aggregate_churn_pct }}%</div></div>
+                <div class="stat-icon" style="background:rgba(239,68,68,0.1); color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card d-flex align-items-center justify-content-between">
+                <div><span class="text-uppercase tracking-wider small fw-bold opacity-60">Mean Credit Profile</span><div class="stat-value text-info">{{ stats.average_credit }}</div></div>
+                <div class="stat-icon" style="background:rgba(14,165,233,0.1); color:#0ea5e9;"><i class="fa-solid fa-id-card"></i></div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card d-flex align-items-center justify-content-between">
+                <div><span class="text-uppercase tracking-wider small fw-bold opacity-60">Active Core Users</span><div class="stat-value text-success">{{ stats.active_ratio }}%</div></div>
+                <div class="stat-icon" style="background:rgba(34,197,94,0.1); color:#22c55e;"><i class="fa-solid fa-chart-line"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-7">
+            <div class="glass-card h-100">
+                <h5 class="fw-bold mb-4" style="color: var(--text-heading);"><i class="fa-solid fa-wave-square me-2 text-info"></i>Macroscopic Retention Historical Trend</h5>
+                <canvas id="retentionTrendCanvas" height="220"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="glass-card h-100">
+                <h5 class="fw-bold mb-4" style="color: var(--text-heading);"><i class="fa-solid fa-earth-americas me-2 text-warning"></i>Regional Node Structural Distribution</h5>
+                <canvas id="nodePieCanvas" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Engine Benchmarks -->
+    <div class="glass-card">
+        <h5 class="fw-bold mb-4" style="color: var(--text-heading);"><i class="fa-solid fa-microchip me-2 text-primary"></i>Neural Engine Operational Benchmarks</h5>
+        <div class="row g-4 text-center">
+            <div class="col-md-3 col-6">
+                <span class="small opacity-70 d-block text-uppercase fw-bold mb-1">Receiver Operating (AUC)</span>
+                <span class="fs-3 fw-bold text-warning font-monospace">{{ stats.auc_score }}</span>
+            </div>
+            <div class="col-md-3 col-6">
+                <span class="small opacity-70 d-block text-uppercase fw-bold mb-1">Model Accuracy</span>
+                <span class="fs-3 fw-bold text-white font-monospace" style="color: var(--text-heading) !important;">{{ stats.accuracy }}%</span>
+            </div>
+            <div class="col-md-3 col-6">
+                <span class="small opacity-70 d-block text-uppercase fw-bold mb-1">Precision Matrix Coefficient</span>
+                <span class="fs-3 fw-bold text-white font-monospace" style="color: var(--text-heading) !important;">{{ stats.precision }}%</span>
+            </div>
+            <div class="col-md-3 col-6">
+                <span class="small opacity-70 d-block text-uppercase fw-bold mb-1">Sensitivity Profile / Recall</span>
+                <span class="fs-3 fw-bold text-white font-monospace" style="color: var(--text-heading) !important;">{{ stats.recall }}%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const rootEngine = document.documentElement;
+    if(localStorage.getItem('preferredTheme')) rootEngine.setAttribute('data-theme', localStorage.getItem('preferredTheme'));
+    
+    document.getElementById('themeEngineTrigger').addEventListener('click', () => {
+        const structuralNext = rootEngine.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        rootEngine.setAttribute('data-theme', structuralNext);
+        localStorage.setItem('preferredTheme', structuralNext);
+    });
+
+    new Chart(document.getElementById('retentionTrendCanvas'), {
+        type: 'line',
+        data: {
+            labels: {{ stats.timeline_labels|tojson }},
+            datasets: [{
+                label: 'Global Churn Progression %',
+                data: {{ stats.historical_risk }},
+                borderColor: '#00f2fe',
+                backgroundColor: 'rgba(0, 242, 254, 0.05)',
+                tension: 0.25,
+                fill: true
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    new Chart(document.getElementById('nodePieCanvas'), {
+        type: 'doughnut',
+        data: {
+            labels: ['France', 'Germany', 'Spain'],
+            datasets: [{
+                data: [{{ stats.france_count }}, {{ stats.germany_count }}, {{ stats.spain_count }}],
+                backgroundColor: ['#4facfe', '#00f2fe', '#f59e0b'],
+                borderWidth: 0
+            }]
+        },
+        options: { responsive: true }
+    });
+</script>
+</body>
+</html>

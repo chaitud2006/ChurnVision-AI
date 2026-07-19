@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHURNVISION - Diagnostic Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-workspace: #090d16;
+            --surface-card: #131926;
+            --border-ui: #243049;
+            --text-heading: #ffffff;
+            --text-body: #e2e8f0; /* Significantly brightened for contrast */
+            --text-muted: #94a3b8;
+            --brand-primary: #00f2fe;
+            --brand-accent: #4facfe;
+            --field-bg: #0b0f19;
+        }
+        body { 
+            background: radial-gradient(circle at top, #111827 0%, var(--bg-workspace) 100%); 
+            color: var(--text-body); 
+            font-family: 'Inter', system-ui, sans-serif; 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+        }
+        .glass-card { 
+            background: var(--surface-card); 
+            border: 1px solid var(--border-ui); 
+            border-radius: 20px; 
+            padding: 3rem; 
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+        }
+        .badge-pill-custom { 
+            font-size: 0.85rem; 
+            padding: 10px 24px; 
+            border-radius: 50px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.06em; 
+            display: inline-block; 
+        }
+        .badge-critical { background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1.5px solid #ef4444; }
+        .badge-warning { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1.5px solid #f59e0b; }
+        .badge-stable { background: rgba(34, 197, 94, 0.12); color: #4ade80; border: 1.5px solid #22c55e; }
+        
+        .attribute-pill { 
+            background: var(--field-bg); 
+            border: 1px solid var(--border-ui); 
+            border-radius: 12px; 
+            padding: 14px; 
+            transition: border-color 0.2s;
+        }
+        .attribute-pill:hover {
+            border-color: var(--brand-accent);
+        }
+        .pill-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-uppercase: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .pill-value {
+            color: var(--text-heading);
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+        .strategy-container { 
+            background: var(--field-bg); 
+            border: 1px solid var(--border-ui); 
+            border-radius: 14px; 
+            text-align: left; 
+        }
+        /* Fix for the unreadable text list */
+        .strategy-list li {
+            color: #f1f5f9 !important; /* Forces high-contrast clean white text */
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .btn-brand-accent { 
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent)); 
+            border: none; 
+            color: #040814; 
+            font-weight: 700; 
+            border-radius: 8px; 
+            transition: transform 0.2s, filter 0.2s; 
+        }
+        .btn-brand-accent:hover { 
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            color: #040814; 
+        }
+        .btn-outline-custom {
+            border: 1px solid var(--border-ui);
+            color: var(--text-heading);
+            font-weight: 600;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .btn-outline-custom:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-heading);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-8">
+            <div class="glass-card shadow-lg">
+                
+                <div class="text-center mb-2">
+                    <span class="small text-uppercase tracking-widest text-info fw-bold mb-3 d-inline-block">
+                        <i class="fa-solid fa-microchip me-2"></i>Analysis Execution Layer Success
+                    </span>
+                </div>
+                
+                <div class="text-center mb-4">
+                    <span class="badge-pill-custom {{ style }}">{{ tier }} ATTRITION THRESHOLD</span>
+                </div>
+                
+                <h2 class="fw-bold text-white text-center mb-5">
+                    Calculated Churn Probability: <span style="color: var(--brand-primary)">{{ risk }}%</span>
+                </h2>
+
+                <!-- Parameter Data Blocks -->
+                <div class="row g-3 text-start mb-4">
+                    <div class="col-6 col-md-3">
+                        <div class="attribute-pill">
+                            <span class="pill-label">Age</span>
+                            <span class="pill-value">{{ age }} Years</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="attribute-pill">
+                            <span class="pill-label">FICO Credit</span>
+                            <span class="pill-value">{{ credit }} Pts</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="attribute-pill">
+                            <span class="pill-label">Ledger Vault</span>
+                            <span class="pill-value">${{ "%.2f"|format(balance) }}</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="attribute-pill">
+                            <span class="pill-label">Geography</span>
+                            <span class="pill-value">{{ geography }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strategy Action Box -->
+                <div class="strategy-container p-4 mb-5">
+                    <h6 class="text-warning fw-bold mb-3 text-uppercase tracking-wider small">
+                        <i class="fa-solid fa-shield-halved me-2"></i>Tailored Account Retention Playbook
+                    </h6>
+                    <ul class="m-0 ps-3 strategy-list">
+                        {% if tier == "CRITICAL HIGH" %}
+                            <li class="mb-2">Flag client records immediately for specialized executive re-engagement handlers to trigger within a 24-hour cycle window.</li>
+                            <li>Waive platform account asset administrative management overhead transaction fees entirely for the next 12 billing periods.</li>
+                        {% elif tier == "ELEVATED WARNING" %}
+                            <li class="mb-2">Automate proactive system emails highlighting newly integrated corporate updates and tools matching client asset structures.</li>
+                            <li>Promote system support access levels to VIP tiering to decrease operational complaints.</li>
+                        {% else %}
+                            <li>Profile functions execute cleanly within nominal baselines. No programmatic outreach steps or risk mitigation routines are requested.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="/terminal" class="btn btn-outline-custom w-100 py-2.5">
+                            <i class="fa-solid fa-chevron-left me-2"></i>Return to Operational Core
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/dashboard" class="btn btn-brand-accent w-100 py-2.5">
+                            <i class="fa-solid fa-chart-pie me-2"></i>View System Wide Metrics
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
